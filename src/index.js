@@ -3,8 +3,8 @@ import { ApolloServer } from "apollo-server-express";
 import { Server } from "http";
 import { typeDefs, resolvers } from "./graphql";
 import { PORT, NEURON_IMAGE_DIR, PREDICTION_DIR } from "./config";
-
 import { graphqlUploadExpress } from 'graphql-upload';
+import db from "../models";
 
 const app = express();
 var http = Server(app);
@@ -16,11 +16,19 @@ app.use("/outputs" , express.static(PREDICTION_DIR))
 
 
 async function startServer() {
-
+    
+    
+        
+    
     const apolloServer = new ApolloServer({
         csrfPrevention: false,
         typeDefs,
-        resolvers
+        resolvers , 
+        context : ({request}) => { 
+            return {
+                db 
+            }
+        }
     });
 
     await apolloServer.start();
