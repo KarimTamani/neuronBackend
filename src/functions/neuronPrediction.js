@@ -13,7 +13,8 @@ function appendHostToNeuronPredictionImages(prediction) {
      
         prediction.images[index] = HOST + prediction.images[index];
 
-    console.log(prediction.images);
+  
+        
 
     return prediction;
 }

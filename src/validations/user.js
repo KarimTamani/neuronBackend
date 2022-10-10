@@ -19,11 +19,12 @@ export const signUpValidator = yup.object({
     }),
     phone: yup.string().notRequired().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
         .test("phone-exists", "This phone number is taken", async (phone) => {
-            var user = await db.User.findOne({
-                where: {
-                    phone: phone
-                }
-            });
+            if (phone)
+                var user = await db.User.findOne({
+                    where: {
+                        phone: phone
+                    }
+                });
             return !user;
         }),
 
@@ -46,16 +47,16 @@ export const editProfilValidator = (userId) => {
 
         email: yup.string().email().test("email-exists", "This Email is taken", async (email) => {
             var user = await db.User.findOne({
-               
+
                 where: {
                     id: {
                         [Op.not]: userId
-                    }, 
+                    },
                     email: email
                 }
             });
 
-            console.log(user) ; 
+
             return !user;
 
         }),
