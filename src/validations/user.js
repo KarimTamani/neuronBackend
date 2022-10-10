@@ -17,7 +17,7 @@ export const signUpValidator = yup.object({
         return !user;
 
     }),
-    phone: yup.string().required().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
+    phone: yup.string().notRequired().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
         .test("phone-exists", "This phone number is taken", async (phone) => {
             var user = await db.User.findOne({
                 where: {
@@ -55,7 +55,7 @@ export const editProfil = (userId) => {
             return !user;
 
         }),
-        phone: yup.string().required().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
+        phone: yup.string().notRequired().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
             .test("phone-exists", "This phone number is taken", async (phone) => {
                 var user = await db.User.findOne({
                     where: {
