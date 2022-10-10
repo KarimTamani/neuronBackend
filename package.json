@@ -27,9 +27,9 @@
     "mysql2": "^2.3.3",
     "sequelize": "^6.5.0",
     "socket.io": "^4.1.2",
-    "socket.io-client": "^2.3.1"
-  }, 
-
+    "socket.io-client": "^2.3.1",
+    "yup": "^0.32.11"
+  },
   "resolutions": {
     "fs-capacitor": "^6.2.0",
     "graphql-upload": "^11.0.0"
@@ -37,8 +37,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "sequelize-cli": "^6.5.1" , 
-    "esm": "^3.2.25" 
-  
+    "esm": "^3.2.25",
+    "sequelize-cli": "^6.5.1"
   }
 }
