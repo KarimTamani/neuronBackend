@@ -10,22 +10,10 @@ import { Op } from "sequelize";
 export default {
     Upload: GraphQLUpload,
     Mutation: {
-        diagnosis: async (_, { chestXray }, { isUserAuth, user, imeiValid, imei, db }) => {
+        diagnosis: async (_, { chestXray }, { isUserAuth, user }) => {
 
-            // check if the user is not log in , if he have 5 unauthorized diagnosis 
-            // then theow an error to force him to signup/login
-            if (isUserAuth == false) {
 
-                var diagnosis = await db.Diagnosis.findAll({
-                    where: {
-                        imei: imei
-                    }
-                });
 
-                if (diagnosis.length >= 5)
-                    throw new ApolloError("Unauthorized", 403);
-
-            }
             // extract the filename and the create read stream function 
             // to create the read stream 
             const { filename, createReadStream } = await chestXray.image;
@@ -67,11 +55,10 @@ export default {
                 });
             });
 
-
+            // insert  diagnosis 
             var diagnosis = await db.Diagnosis.create({
                 prediction: JSON.stringify(output),
-                userId: (user) ? (user.id) : (null),
-                imei: (imeiValid) ? (imei) : (null)
+                userId: (user.id)
             });
 
 
@@ -80,23 +67,20 @@ export default {
                 ...output
             }
         },
-        confirmDiagnosis: async (_, { diagnosisId, confirmation }, { db, isUserAuth, user, imeiValid, imei }) => {
+        confirmDiagnosis: async (_, { diagnosisId, confirmation }, { db, user }) => {
             try {
                 // try to find diagnosis taht belongs to the user with the given id  
                 let diagnosis = await db.Diagnosis.findOne({
                     where: {
                         id: diagnosisId,
-                        [Op.or]: [
-                            { userId: (isUserAuth) ? (user.id) : (null) },
-                            { imei: (imeiValid) ? (imei) : (null) }
-                        ]
+                        userId: user.id
                     }
-                }); 
+                });
                 // if the diagnosis do not exists throw an error 
                 if (diagnosis == null)
                     throw new Error("Diagnosis can't be found!");
-                
-                    
+
+
                 // update diagnosis confirmations 
                 await db.Diagnosis.update({
                     confirmation: JSON.stringify(confirmation),
@@ -106,7 +90,7 @@ export default {
                     }
                 });
 
-                return diagnosisId ; 
+                return diagnosisId;
 
             } catch (error) {
                 return new ApolloError(error.message);
@@ -114,14 +98,11 @@ export default {
         }
     },
     Query: {
-        getAllPredictions: async (_, { }, { isUserAuth, user, imeiValid, imei, db }) => {
+        getAllPredictions: async (_, { }, { user, db }) => {
             // get all the diagnosis for the user uthenticated by login or imei
             var diagnosis = await db.Diagnosis.findAll({
                 where: {
-                    [Op.or]: [
-                        { userId: (isUserAuth) ? (user.id) : (null) },
-                        { imei: (imeiValid) ? (imei) : (null) }
-                    ]
+                    userId: user.id,
                 }
             });
             // map throw diagnosis to parse prediction provided by AI 

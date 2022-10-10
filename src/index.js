@@ -5,7 +5,7 @@ import { typeDefs, resolvers, directives } from "./graphql";
 import { PORT, NEURON_IMAGE_DIR, PREDICTION_DIR } from "./config";
 import { graphqlUploadExpress } from 'graphql-upload';
 import db from "../models";
-import {userAuth, imeiMiddleware } from "./middlewares" ; 
+import {userAuth } from "./middlewares" ; 
 import { makeExecutableSchema } from '@graphql-tools/schema'
 
  
@@ -16,7 +16,7 @@ var http = Server(app);
 
 
 app.use(userAuth) ; 
-app.use(imeiMiddleware) ; 
+
 
 app.use(graphqlUploadExpress());
 app.use("/images", express.static(NEURON_IMAGE_DIR));
@@ -25,7 +25,8 @@ app.use("/outputs" , express.static(PREDICTION_DIR))
 var schema = makeExecutableSchema({ typeDefs , resolvers} ) 
 
 schema = directives.userAuthDirective()(schema) ; 
-schema = directives.imeiOrAuthDirective()(schema) ; 
+
+
 
 async function startServer() {
     
