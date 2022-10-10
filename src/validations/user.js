@@ -1,33 +1,76 @@
-import * as yup from "yup" ; 
-import db from "../../models" ; 
- 
-export const signUpValidator = yup.object({
-    
-    name : yup.string().required().min(3) , 
-    lastname : yup.string().required().min(3) , 
-    
-    
-    email : yup.string().email().test("email-exists" , "This Email is taken" ,async (email) => { 
-        var user = await db.User.findOne({ 
-            where : { 
-                email : email 
-            }
-        }) ; 
-        return !user; 
+import { Op } from "sequelize";
+import * as yup from "yup";
+import db from "../../models";
 
-    }) , 
-    phone : yup.string().required().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
-    .test("phone-exists" , "This phone number is taken" , async(phone) => { 
+export const signUpValidator = yup.object({
+
+    name: yup.string().required().min(3),
+    lastname: yup.string().required().min(3),
+
+
+    email: yup.string().email().test("email-exists", "This Email is taken", async (email) => {
         var user = await db.User.findOne({
-            where : { 
-                phone : phone
+            where: {
+                email: email
             }
-        }) ; 
-        return !user ; 
-    }) , 
-   
-    password : yup.string().required().min(6) , 
-    occupation : yup.string().notRequired().min(3) 
+        });
+        return !user;
+
+    }),
+    phone: yup.string().required().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
+        .test("phone-exists", "This phone number is taken", async (phone) => {
+            var user = await db.User.findOne({
+                where: {
+                    phone: phone
+                }
+            });
+            return !user;
+        }),
+
+    password: yup.string().required().min(6),
+    occupation: yup.string().notRequired().min(3)
 })
 
+
+
+export const loginValidator = yup.object({
+    identifier: yup.string().required().min(6),
+    password: yup.string().required().min(6)
+});
+
+export const editProfil = (userId) => {
+    return yup.object({
+        name: yup.string().required().min(3),
+        lastname: yup.string().required().min(3),
+
+
+        email: yup.string().email().test("email-exists", "This Email is taken", async (email) => {
+            var user = await db.User.findOne({
+                where: {
+                    email: email
+                },id: {
+                    [Op.not]: userId
+                }
+            });
+            return !user;
+
+        }),
+        phone: yup.string().required().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
+            .test("phone-exists", "This phone number is taken", async (phone) => {
+                var user = await db.User.findOne({
+                    where: {
+
+                        phone: phone,
+                        id: {
+                            [Op.not]: userId
+                        }
+
+                    }
+                });
+                return !user;
+            }),
+
+        occupation: yup.string().notRequired().min(3)
+    })
+}
 

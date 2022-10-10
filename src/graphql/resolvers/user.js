@@ -1,12 +1,42 @@
 
 import { ApolloError } from "apollo-server-express";
 import { hash , compare } from "bcryptjs";
-import { signUpValidator } from "../../validations/";
+import { Op } from "sequelize";
+import { signUpValidator, loginValidator} from "../../validations/";
 
 export default {
     Query: {
-        Login: (_, { identifier, password }, { db }) => {
+        Login: async (_, { identifier, password }, { db }) => {
 
+            try {
+                await loginValidator.validate({identifier , password}, { abortEarly : true}) ; 
+                // get user that identifier match his email or phone number 
+                var user =  await db.User.findOne({
+                    where : { 
+                        
+                        [Op.or] : [
+                            {email : identifier} , 
+                            {phone : identifier}
+                        ]
+                    }
+                }) ; 
+                console.log(user) ; 
+                // there is no user with the given identifier 
+                if ( user == null ) 
+                    throw new Error("Identifier not valid") ;
+                
+
+                // check the password 
+                var isMath =await compare(password , user.password ) ; 
+                
+                if (!isMath) 
+                    throw new Error("Wrong password") ; 
+                
+                return user ; 
+
+            } catch(error) { 
+                return new ApolloError(error.message) ; 
+            }
         }
 
     },
