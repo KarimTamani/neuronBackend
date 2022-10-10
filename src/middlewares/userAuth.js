@@ -14,6 +14,7 @@ export const userAuth = async (request, response, next) => {
         return next();
     }
 
+
     let decodedToken = null;
     // decode token 
     try {
@@ -27,7 +28,7 @@ export const userAuth = async (request, response, next) => {
         request.isUserAuth = false;
         return next();
     }
-
+ 
     // check if realy this token belongs to a valid doctor 
     var user = await db.User.findOne({
         where: {

@@ -5,6 +5,7 @@
     "database": "neuron",
     "host": "localhost",
     "dialect": "mysql",
+    "loggin" : false , 
     "define": {
       "timestamps": false,
       "charset": "utf8",

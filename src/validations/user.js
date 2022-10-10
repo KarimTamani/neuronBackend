@@ -38,35 +38,38 @@ export const loginValidator = yup.object({
     password: yup.string().required().min(6)
 });
 
-export const editProfil = (userId) => {
+export const editProfilValidator = (userId) => {
     return yup.object({
+
         name: yup.string().required().min(3),
         lastname: yup.string().required().min(3),
 
-
         email: yup.string().email().test("email-exists", "This Email is taken", async (email) => {
             var user = await db.User.findOne({
+               
                 where: {
+                    id: {
+                        [Op.not]: userId
+                    }, 
                     email: email
-                },id: {
-                    [Op.not]: userId
                 }
             });
+
+            console.log(user) ; 
             return !user;
 
         }),
         phone: yup.string().notRequired().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
             .test("phone-exists", "This phone number is taken", async (phone) => {
-                var user = await db.User.findOne({
-                    where: {
-
-                        phone: phone,
-                        id: {
-                            [Op.not]: userId
+                if (phone)
+                    var user = await db.User.findOne({
+                        where: {
+                            phone: phone,
+                            id: {
+                                [Op.not]: userId
+                            }
                         }
-
-                    }
-                });
+                    });
                 return !user;
             }),
 

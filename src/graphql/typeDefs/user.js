@@ -7,8 +7,8 @@ export default gql`
     }
 
     extend type Mutation { 
-        SignUp(userInput : UserInput!) : UserToken!
-        editProfil(userInput : UserInput!) : User!
+        SignUp(userInput : UserInput!) : UserToken!  
+        editProfil(userInput : UserInput!) : UserToken! @userAuth  
     }
 
     input UserInput { 
@@ -27,6 +27,8 @@ export default gql`
         email : String! 
         phone : String 
         occupation : String 
+        createdAt : String! 
+        updatedAt : String!
     }
 
     type UserToken { 

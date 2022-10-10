@@ -3,7 +3,7 @@ import { ApolloError } from "apollo-server-express";
 import { hash, compare } from "bcryptjs";
 import { Op } from "sequelize";
 import { createToken } from "../../functions/jwt";
-import { signUpValidator, loginValidator } from "../../validations/";
+import { signUpValidator, loginValidator, editProfilValidator } from "../../validations/";
 
 export default {
     Query: {
@@ -33,7 +33,7 @@ export default {
                     throw new Error("Wrong password");
 
                 // create token 
-                var token = createToken(user.email, user.token);
+                var token = createToken(user.email, user.password);
                 
                 return { 
                     user : user , 
@@ -53,7 +53,7 @@ export default {
                 await signUpValidator.validate(userInput, { abortEarly: true });
 
                 // hash user password before insert it into database 
-                userInput.password = await hash(userInput.password, 10)
+                userInput.password = await hash(userInput.password, 10) ; 
                 // create token 
                 var token = await createToken(userInput.email, userInput.password);
                 // create and return user 
@@ -69,8 +69,39 @@ export default {
 
         },
 
-        editProfil: (_, { userInput }, { db }) => {
+        editProfil: async (_, { userInput }, { db , user  }) => {
 
+            try { 
+                // validate user input 
+                await editProfilValidator(user.id).validate(userInput , { abortEarly : true}) ; 
+            
+                // update user 
+                await db.User.update(userInput , {
+                    where : { 
+                        id : user.id
+                    }
+                })
+
+                // create new token 
+                var token = createToken(userInput.email , user.password) ; 
+
+                return {
+                    user : db.User.findOne({
+                        where : { 
+                            id : user.id
+                        }
+                    }) , 
+                    token : token 
+                }
+
+                return {
+
+                }
+
+            }catch(error) {
+                return new ApolloError(error.message) ; 
+            }
+            
         }
 
     }
