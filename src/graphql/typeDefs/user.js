@@ -12,8 +12,8 @@ export default gql`
     }
 
     input UserInput { 
-        name : String! 
-        lastname : String! 
+        name : String 
+        lastname : String  
         email : String! 
         password : String  
         phone : String
@@ -22,8 +22,8 @@ export default gql`
 
     type User {
         id:  ID! 
-        name : String! 
-        lastname : String!
+        name : String 
+        lastname : String 
         email : String! 
         phone : String 
         occupation : String 

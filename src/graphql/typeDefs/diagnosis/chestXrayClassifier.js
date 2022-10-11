@@ -7,7 +7,7 @@ export default gql`
         confirmDiagnosis(diagnosisId : ID! , confirmation : [String!]!) : ID! @userAuth 
    }
    extend type Query { 
-        getAllPredictions : [Diagnosis!]! @userAuth
+        getAllPredictions(offset : Int! , limit : Int!) : [Diagnosis!]! @userAuth
    } 
     input ChestXray   { 
         image : Upload! , 

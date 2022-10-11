@@ -4,9 +4,7 @@ import db from "../../models";
 
 export const signUpValidator = yup.object({
 
-    name: yup.string().required().min(3),
-    lastname: yup.string().required().min(3),
-
+    
 
     email: yup.string().email().test("email-exists", "This Email is taken", async (email) => {
         var user = await db.User.findOne({
@@ -29,7 +27,7 @@ export const signUpValidator = yup.object({
         }),
 
     password: yup.string().required().min(6),
-    occupation: yup.string().notRequired().min(3)
+
 })
 
 

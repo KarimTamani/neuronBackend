@@ -10,7 +10,7 @@ import { Op } from "sequelize";
 export default {
     Upload: GraphQLUpload,
     Mutation: {
-        diagnosis: async (_, { chestXray }, { isUserAuth, user }) => {
+        diagnosis: async (_, { chestXray }, {  user, db }) => {
 
 
 
@@ -98,12 +98,14 @@ export default {
         }
     },
     Query: {
-        getAllPredictions: async (_, { }, { user, db }) => {
+        getAllPredictions: async (_, {offset , limit  }, { user, db }) => {
             // get all the diagnosis for the user uthenticated by login or imei
             var diagnosis = await db.Diagnosis.findAll({
                 where: {
                     userId: user.id,
-                }
+                },
+                offset : offset , 
+                limit : limit
             });
             // map throw diagnosis to parse prediction provided by AI 
             diagnosis = diagnosis.map((entry) => {
