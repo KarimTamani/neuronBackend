@@ -64,6 +64,7 @@ export default {
 
             return {
                 id: diagnosis.id,
+                createdAt : diagnosis.createdAt , 
                 ...output
             }
         },
@@ -105,13 +106,17 @@ export default {
                     userId: user.id,
                 },
                 offset : offset , 
-                limit : limit
+                limit : limit , 
+                order: [
+                    ['id', 'DESC']
+                ]
             });
             // map throw diagnosis to parse prediction provided by AI 
             diagnosis = diagnosis.map((entry) => {
-                return {
+                 return {
                     id: entry.id,
-                    confimration: entry.confirmation,
+                    createdAt : entry.createdAt , 
+                    confirmation: JSON.parse(entry.confirmation),
                     ...JSON.parse(entry.prediction)
                 }
             });
@@ -119,4 +124,4 @@ export default {
             return diagnosis;
         }
     }
-}
+} 

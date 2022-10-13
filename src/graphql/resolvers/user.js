@@ -5,6 +5,9 @@ import { Op } from "sequelize";
 import { createToken } from "../../functions/jwt";
 import { signUpValidator, loginValidator, editProfilValidator } from "../../validations/";
 
+const MONTH = 60 * 60 * 24 * 30 * 1000;
+
+
 export default {
     Query: {
         Login: async (_, { identifier, password }, { db }) => {
@@ -34,13 +37,45 @@ export default {
 
                 // create token 
                 var token = createToken(user.email, user.password);
-                
-                return { 
-                    user : user , 
-                    token : token 
+
+                return {
+                    user: user,
+                    token: token
                 }
             } catch (error) {
                 return new ApolloError(error.message);
+            }
+        },
+        getStats: async (_, { }, { db, user }) => {
+
+
+            // get the last month start end dates 
+            var currentDate = new Date();
+            var monthBegining = new Date(currentDate.getTime() - MONTH);
+
+            // get all diagnosis that belongs to the requesting user for this last month 
+            var diagnoses = await user.getDiagnosis({
+                attributes: ['id', 'confirmation'],
+                where: {
+                    createdAt: {
+                        [Op.between]: [monthBegining, currentDate]
+                    }
+                }
+            });
+
+            var confirmationCount = 0;
+            // loop over all diagnses of this month and calculate the confirmations done by the given user
+            for (let index = 0; index < diagnoses.length; index++) {
+                try {
+                    var confirmations = JSON.parse(diagnoses[index].confirmation)
+                    confirmationCount += confirmations.length ; 
+                } catch (error) {
+                    continue;
+                }
+            }
+            return {
+                predictionNum: diagnoses.length ,
+                confirmedNum: confirmationCount
             }
         }
 
@@ -53,7 +88,7 @@ export default {
                 await signUpValidator.validate(userInput, { abortEarly: true });
 
                 // hash user password before insert it into database 
-                userInput.password = await hash(userInput.password, 10) ; 
+                userInput.password = await hash(userInput.password, 10);
                 // create token 
                 var token = await createToken(userInput.email, userInput.password);
                 // create and return user 
@@ -69,39 +104,39 @@ export default {
 
         },
 
-        editProfil: async (_, { userInput }, { db , user  }) => {
+        editProfil: async (_, { userInput }, { db, user }) => {
 
-            try { 
+            try {
                 // validate user input 
-                await editProfilValidator(user.id).validate(userInput , { abortEarly : true}) ; 
-            
+                await editProfilValidator(user.id).validate(userInput, { abortEarly: true });
+
                 // update user 
-                await db.User.update(userInput , {
-                    where : { 
-                        id : user.id
+                await db.User.update(userInput, {
+                    where: {
+                        id: user.id
                     }
                 })
 
                 // create new token 
-                var token = createToken(userInput.email , user.password) ; 
+                var token = createToken(userInput.email, user.password);
 
                 return {
-                    user : db.User.findOne({
-                        where : { 
-                            id : user.id
+                    user: db.User.findOne({
+                        where: {
+                            id: user.id
                         }
-                    }) , 
-                    token : token 
+                    }),
+                    token: token
                 }
 
                 return {
 
                 }
 
-            }catch(error) {
-                return new ApolloError(error.message) ; 
+            } catch (error) {
+                return new ApolloError(error.message);
             }
-            
+
         }
 
     }

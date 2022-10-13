@@ -18,9 +18,7 @@ module.exports = (Sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
-
-   
-
+  
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -31,7 +29,8 @@ module.exports = (Sequelize, DataTypes) => {
       }
     }
   }, {
-    tableName: "Diagnosis"
+    tableName: "Diagnosis" , 
+    timestamps  : true  
   })
 
   diagnosis.associate = (db) => {

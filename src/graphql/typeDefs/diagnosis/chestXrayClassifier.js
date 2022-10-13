@@ -18,7 +18,8 @@ export default gql`
         id : ID!
         images : [String!]! , 
         predictions : [Prediction!]!
-        confirmation : String
+        confirmation : [String!]
+        createdAt : String!
     }
 
     type Prediction { 

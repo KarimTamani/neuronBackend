@@ -4,12 +4,14 @@ export default gql`
 
     extend type Query {
         Login(identifier : String! , password : String!) : UserToken! 
+        getStats : Stats! @userAuth
     }
 
     extend type Mutation { 
         SignUp(userInput : UserInput!) : UserToken!  
         editProfil(userInput : UserInput!) : UserToken! @userAuth  
     }
+
 
     input UserInput { 
         name : String 
@@ -20,6 +22,10 @@ export default gql`
         occupation : String  
     }
 
+    type Stats { 
+        predictionNum : Int! 
+        confirmedNum : Int!  
+    }
     type User {
         id:  ID! 
         name : String 

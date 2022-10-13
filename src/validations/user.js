@@ -72,7 +72,7 @@ export const editProfilValidator = (userId) => {
                 return !user;
             }),
 
-        occupation: yup.string().notRequired().min(3)
+        occupation: yup.string().nullable().notRequired().min(3)
     })
 }
 

@@ -2,39 +2,43 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    return queryInterface.createTable("Diagnosis" , { 
-      id : {
-        type : Sequelize.INTEGER , 
-        autoIncrement : true , 
-        allowNull : false , 
-        primaryKey : true , 
+  async up(queryInterface, Sequelize) {
+    return queryInterface.createTable("Diagnosis", {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true,
 
-      } , 
-      prediction : {
-        type : Sequelize.TEXT , 
-        allowNull : false , 
-      }, 
-      confirmation : { 
-        type : Sequelize.STRING, 
-        allowNull : true 
-      }, 
-     
-      userId : { 
-        type : Sequelize.INTEGER , 
-        allowNull : false , 
+      },
+      prediction: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      confirmation: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
         onDelete: "CASCADE",
         references: {
-            model: "Users",
-            key: "id"
-        } 
+          model: "Users",
+          key: "id"
+        }
       }
+      ,
+      createdAt: Sequelize.DATE,
+      updatedAt: Sequelize.DATE
+    }, {
+      timestamps: true
     })
-    
   },
 
-  async down (queryInterface, Sequelize) {
-    
-    return queryInterface.dropTable("Diagnosis") ; 
+  async down(queryInterface, Sequelize) {
+
+    return queryInterface.dropTable("Diagnosis");
   }
 };
