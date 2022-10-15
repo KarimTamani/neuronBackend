@@ -1,5 +1,7 @@
 import { HOST } from "../config";
 
+var diseases = require("../../assets/diseases.json") ; 
+
 
 function appendHostToNeuronPredictionImages(prediction) {
     // parse the result to json format so we can process it 
@@ -18,4 +20,19 @@ function appendHostToNeuronPredictionImages(prediction) {
 
     return prediction;
 }
-export { appendHostToNeuronPredictionImages };
+function translatePredictions(predictions) { 
+     
+    var translatedPredictions = [] ; 
+    for (let index = 0 ; index < predictions.length ; index ++) { 
+        translatedPredictions.push({
+            "disease" : diseases[predictions[index].disease]  
+        }) ; 
+    }
+    return translatedPredictions; 
+}
+
+
+
+
+export { appendHostToNeuronPredictionImages , translatePredictions };
+

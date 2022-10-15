@@ -2,7 +2,7 @@ import { createWriteStream } from "fs";
 import path from "path";
 import { NEURON_IMAGE_DIR, HOST } from "../../../config";
 import { GraphQLUpload } from "graphql-upload";
-import { neuronClient, appendHostToNeuronPredictionImages } from "../../../functions/";
+import { neuronClient, appendHostToNeuronPredictionImages , translatePredictions} from "../../../functions/";
 import { ApolloError } from "apollo-server-express";
 import { Op } from "sequelize";
 
@@ -10,10 +10,7 @@ import { Op } from "sequelize";
 export default {
     Upload: GraphQLUpload,
     Mutation: {
-        diagnosis: async (_, { chestXray }, {  user, db }) => {
-
-
-
+        diagnosis: async (_, { chestXray , language  }, {  user, db }) => {
             // extract the filename and the create read stream function 
             // to create the read stream 
             const { filename, createReadStream } = await chestXray.image;
@@ -61,7 +58,10 @@ export default {
                 userId: (user.id)
             });
 
-
+            if ( language == "FR") { 
+                output.predictions = translatePredictions(output.predictions) ; 
+                
+            }
             return {
                 id: diagnosis.id,
                 createdAt : diagnosis.createdAt , 
@@ -99,8 +99,12 @@ export default {
         }
     },
     Query: {
-        getAllPredictions: async (_, {offset , limit  }, { user, db }) => {
+        getAllPredictions: async (_, {offset , limit , language }, { user, db }) => {
             // get all the diagnosis for the user uthenticated by login or imei
+            console.log(language) ; 
+
+
+
             var diagnosis = await db.Diagnosis.findAll({
                 where: {
                     userId: user.id,
@@ -113,14 +117,19 @@ export default {
             });
             // map throw diagnosis to parse prediction provided by AI 
             diagnosis = diagnosis.map((entry) => {
-                 return {
+                var appendData = {...JSON.parse(entry.prediction)} ; 
+                if (language == "FR")  { 
+                    appendData.predictions = translatePredictions(appendData.predictions) ; 
+                }
+
+                return {
                     id: entry.id,
                     createdAt : entry.createdAt , 
                     confirmation: JSON.parse(entry.confirmation),
-                    ...JSON.parse(entry.prediction)
+                    ...appendData
                 }
             });
-
+ 
             return diagnosis;
         }
     }

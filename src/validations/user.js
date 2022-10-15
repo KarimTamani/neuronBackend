@@ -4,7 +4,7 @@ import db from "../../models";
 
 export const signUpValidator = yup.object({
 
-    
+
 
     email: yup.string().email().test("email-exists", "This Email is taken", async (email) => {
         var user = await db.User.findOne({
@@ -58,8 +58,13 @@ export const editProfilValidator = (userId) => {
             return !user;
 
         }),
-        phone: yup.string().notRequired().matches(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
-            .test("phone-exists", "This phone number is taken", async (phone) => {
+        phone: yup.string().notRequired()
+            .test("invalid-phone-number", "Phone numbre is not valid", (value) => {
+                return String(value).match(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)
+
+            }).
+
+            test("phone-exists", "This phone number is taken", async (phone) => {
                 if (phone)
                     var user = await db.User.findOne({
                         where: {

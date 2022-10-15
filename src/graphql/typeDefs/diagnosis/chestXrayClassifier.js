@@ -3,11 +3,11 @@ import { gql } from "apollo-server-express";
 export default gql`
 
    extend type Mutation  {
-        diagnosis (chestXray : ChestXray!) : Diagnosis! @userAuth
+        diagnosis (chestXray : ChestXray! , language : String) : Diagnosis! @userAuth
         confirmDiagnosis(diagnosisId : ID! , confirmation : [String!]!) : ID! @userAuth 
    }
    extend type Query { 
-        getAllPredictions(offset : Int! , limit : Int!) : [Diagnosis!]! @userAuth
+        getAllPredictions(offset : Int! , limit : Int!, language : String) : [Diagnosis!]! @userAuth
    } 
     input ChestXray   { 
         image : Upload! , 

@@ -78,8 +78,41 @@ class ChestXRayClassifier(Classifier):
         return {"predictions": self.labeld(prediction), "image": output_path}
 
 
-labels = ['Atélectasie', 'Consolidation', 'Infiltrat', 'Pneumothorax', 'oedème', 'Emphysème', 'Fibrose', 'Épanchement', 'Pneumonie',
-          'Épaississement pleural', 'Cardiomégalie', 'Nodule', 'Masse', 'Hernie', 'Lésion pulmonaire', 'Fracture', 'Opacité pulmonaire', 'Elargissement mediastinal']
+{'Atelectasis': {0.0: 17621, 1.0: 29718},
+ 'Cardiomegaly': {0.0: 22645, 1.0: 23384},
+ 'Consolidation': {0.0: 30463, 1.0: 12982},
+ 'Edema': {0.0: 29449, 1.0: 49674},
+ 'Effusion': {0.0: 34376, 1.0: 76894},
+ 'Enlarged Cardiomediastinum': {0.0: 26527, 1.0: 9186},
+ 'Fracture': {0.0: 18111, 1.0: 7434},
+ 'Lung Lesion': {0.0: 17523, 1.0: 7040},
+ 'Lung Opacity': {0.0: 20165, 1.0: 94207},
+ 'Pleural Other': {0.0: 17166, 1.0: 2503},
+ 'Pneumonia': {0.0: 18105, 1.0: 4674},
+ 'Pneumothorax': {0.0: 54165, 1.0: 17693},
+ 'Support Devices': {0.0: 21757, 1.0: 99747}}
+
+labels = [
+    'Atelectasis',
+    'Consolidation',
+    'Infiltration',
+    'Pneumothorax',
+    'Edema',
+    'Emphysema',
+    'Fibrosis',
+    'Effusion',
+    'Pneumonia',
+    'Pleural Thickening',
+    'Cardiomegaly',
+    'Nodule',
+    'Mass',
+    'Hernia',
+    'Lung Lesion',
+    'Fracture',
+    'Lung Opacity',
+    'Enlarged Cardiomediastinum'
+]
+
 IMG_SHAPE = (224, 224, 1)
 
 ID = "ChestXrayClassifier"

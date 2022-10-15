@@ -1,0 +1,22 @@
+{
+    "Atelectasis" : "Atélectasie",
+    "Consolidation" : "Consolidation" ,
+    "Infiltration"  : "Infiltrat",
+    "Pneumothorax" : "Pneumothorax" ,
+    "Edema" :"oedème" ,
+    "Emphysema" : "Emphysème" ,
+    "Fibrosis" :"Fibrose",
+    "Effusion" : "Épanchement" ,
+    "Pneumonia" : "Pneumonie",
+    "Pleural Thickening" : "Épaississement pleural" ,
+    "Cardiomegaly"  : "Cardiomégalie" ,
+    "Nodule" : "Nodule",
+    "Mass" : "Masse",
+    "Hernia" : "Hernie",
+    "Lung Lesion" : "Lésion pulmonaire",
+    "Fracture" : "Fracture",
+    "Lung Opacity" : "Opacité pulmonaire",
+    "Enlarged Cardiomediastinum": "Elargissement mediastinal"
+}
+
+
