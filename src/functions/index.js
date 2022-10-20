@@ -1,9 +1,19 @@
-import { appendHostToNeuronPredictionImages, translatePredictions } from "./neuronPrediction";
- 
+import {
+    appendHostToNeuronPredictionImages
+    , translatePredictions
+    , translateConfirmationsToEnglish
+    , translateConfirmationsToFrensh
+    , getConfirmationlanguage
+
+} from "./neuronPrediction";
+
 import neuronClient from "./neuronClient";
 
-export   {
+export {
     appendHostToNeuronPredictionImages,
     neuronClient,
-    translatePredictions
+    translatePredictions , 
+    translateConfirmationsToEnglish , 
+    translateConfirmationsToFrensh , 
+    getConfirmationlanguage
 }

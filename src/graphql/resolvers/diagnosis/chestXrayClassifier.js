@@ -5,16 +5,18 @@ import { GraphQLUpload } from "graphql-upload";
 import { neuronClient, appendHostToNeuronPredictionImages , translatePredictions} from "../../../functions/";
 import { ApolloError } from "apollo-server-express";
 import { Op } from "sequelize";
+import { getConfirmationlanguage, translateConfirmationsToEnglish, translateConfirmationsToFrensh } from "../../../functions/neuronPrediction";
 
 
 export default {
     Upload: GraphQLUpload,
     Mutation: {
-        diagnosis: async (_, { chestXray , language  }, {  user, db }) => {
+        diagnosis: async (_, { chestXray   }, {  user, db }) => {
             // extract the filename and the create read stream function 
             // to create the read stream 
             const { filename, createReadStream } = await chestXray.image;
-
+            const language = chestXray.language ; 
+            
             var readStream = createReadStream();
             var newFilename = `${new Date().getTime().toString()}${path.parse(filename).ext}`;
 
@@ -58,6 +60,7 @@ export default {
                 userId: (user.id)
             });
 
+            console.log(language) ; 
             if ( language == "FR") { 
                 output.predictions = translatePredictions(output.predictions) ; 
                 
@@ -81,6 +84,15 @@ export default {
                 if (diagnosis == null)
                     throw new Error("Diagnosis can't be found!");
 
+                console.log(confirmation) ; 
+                
+                if (confirmation && confirmation.length > 0) {
+                    var language =  getConfirmationlanguage(confirmation) ; 
+                    console.log(language) ; 
+                    if ( language == "FR") 
+                        confirmation = translateConfirmationsToEnglish(confirmation) ; 
+                }                    
+                console.log(confirmation) ; 
 
                 // update diagnosis confirmations 
                 await db.Diagnosis.update({
@@ -101,10 +113,6 @@ export default {
     Query: {
         getAllPredictions: async (_, {offset , limit , language }, { user, db }) => {
             // get all the diagnosis for the user uthenticated by login or imei
-            console.log(language) ; 
-
-
-
             var diagnosis = await db.Diagnosis.findAll({
                 where: {
                     userId: user.id,
@@ -122,10 +130,13 @@ export default {
                     appendData.predictions = translatePredictions(appendData.predictions) ; 
                 }
 
+
                 return {
                     id: entry.id,
                     createdAt : entry.createdAt , 
-                    confirmation: JSON.parse(entry.confirmation),
+                    confirmation: ( (JSON.parse(entry.confirmation) && language == "FR") ? 
+                    ( translateConfirmationsToFrensh(JSON.parse(entry.confirmation)) ) 
+                    : (JSON.parse(entry.confirmation)) ) ,
                     ...appendData
                 }
             });

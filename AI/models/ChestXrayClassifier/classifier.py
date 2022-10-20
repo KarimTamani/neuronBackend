@@ -27,6 +27,7 @@ class ChestXRayClassifier(Classifier):
 
     def heatmap_prediction(self, input, rescale=1./255., show_heatmap=False):
         img = input.copy()
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         input = cv2.cvtColor(input, cv2.COLOR_BGR2GRAY)
         input = cv2.resize(input, self.shape[:-1])
@@ -46,22 +47,34 @@ class ChestXRayClassifier(Classifier):
 
         cam = weight_softmax[np.argsort(
             prediction)[-1]].dot(features.reshape((nc, h*w)))
-        cam = cam.reshape(h, w)
-        cam = cam - np.min(cam)
-        cam_img = cam / np.max(cam)
-        cam_img = np.uint8(255 * cam_img)
 
+
+        cam = cam.reshape(h, w) 
+        cam = cam - np.min(cam)
+        
+        cam_img = cam / np.max(cam)
+        
+        cam_img = np.uint8(255 * cam_img)
+      
         heatmap_shape = list(img.shape[:-1])
         heatmap_shape.reverse()
         heatmap_shape = tuple(heatmap_shape)
 
         heatmap = cv2.resize(cam_img, heatmap_shape)
+        heatmap = np.array(heatmap) ;  
+        
+        print ( heatmap.shape) 
+        
         heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+       
         heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
+        
 
+ 
         img = heatmap * 0.4 + img
 
-        array = np.resize(np.array(img, np.float), (-1))
+
+        array = np.reshape(np.array(img, np.float), (-1))
         array[np.argwhere(array > 255.)] = 255
 
         img = np.resize(array, img.shape)
@@ -78,19 +91,7 @@ class ChestXRayClassifier(Classifier):
         return {"predictions": self.labeld(prediction), "image": output_path}
 
 
-{'Atelectasis': {0.0: 17621, 1.0: 29718},
- 'Cardiomegaly': {0.0: 22645, 1.0: 23384},
- 'Consolidation': {0.0: 30463, 1.0: 12982},
- 'Edema': {0.0: 29449, 1.0: 49674},
- 'Effusion': {0.0: 34376, 1.0: 76894},
- 'Enlarged Cardiomediastinum': {0.0: 26527, 1.0: 9186},
- 'Fracture': {0.0: 18111, 1.0: 7434},
- 'Lung Lesion': {0.0: 17523, 1.0: 7040},
- 'Lung Opacity': {0.0: 20165, 1.0: 94207},
- 'Pleural Other': {0.0: 17166, 1.0: 2503},
- 'Pneumonia': {0.0: 18105, 1.0: 4674},
- 'Pneumothorax': {0.0: 54165, 1.0: 17693},
- 'Support Devices': {0.0: 21757, 1.0: 99747}}
+
 
 labels = [
     'Atelectasis',
