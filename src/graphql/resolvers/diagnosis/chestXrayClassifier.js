@@ -37,7 +37,7 @@ export default {
                     };
 
                     // perform the neuron request inside promise to keep client waiting for the response 
-                    var result = await new Promise((resolve, reject) => {
+                    var response = await new Promise((resolve, reject) => {
                         // create new client socket connect to the server 
                         // apply the diagnosis and wait for the result 
                         var responseEvent = neuronClient(query)
@@ -45,8 +45,13 @@ export default {
                             resolve(data)
                         })
                     });
+
+                    var result = JSON.parse(response) ; 
+                    if (result.error) 
+                        return resolve(result) ; 
+
                     // append the host to eaach predicted image 
-                    result = appendHostToNeuronPredictionImages(result);
+                    result = appendHostToNeuronPredictionImages(response);
 
 
                     // return the prediction result to the user 
@@ -54,13 +59,17 @@ export default {
                 });
             });
 
+            if (output.error) 
+                return new ApolloError(output.error) ; 
+
             // insert  diagnosis 
             var diagnosis = await db.Diagnosis.create({
                 prediction: JSON.stringify(output),
                 userId: (user.id)
             });
 
-            console.log(language) ; 
+         
+            
             if ( language == "FR") { 
                 output.predictions = translatePredictions(output.predictions) ; 
                 
@@ -84,15 +93,15 @@ export default {
                 if (diagnosis == null)
                     throw new Error("Diagnosis can't be found!");
 
-                console.log(confirmation) ; 
+         
                 
                 if (confirmation && confirmation.length > 0) {
                     var language =  getConfirmationlanguage(confirmation) ; 
-                    console.log(language) ; 
+                   
                     if ( language == "FR") 
                         confirmation = translateConfirmationsToEnglish(confirmation) ; 
                 }                    
-                console.log(confirmation) ; 
+        
 
                 // update diagnosis confirmations 
                 await db.Diagnosis.update({

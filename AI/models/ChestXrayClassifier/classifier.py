@@ -63,7 +63,7 @@ class ChestXRayClassifier(Classifier):
         heatmap = cv2.resize(cam_img, heatmap_shape)
         heatmap = np.array(heatmap) ;  
         
-        print ( heatmap.shape) 
+      
         
         heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
        
